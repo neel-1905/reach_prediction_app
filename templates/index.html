@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- <link rel="stylesheet" href="./styles.css"> -->
+    <title>Instagram Impressions Predictor</title>
+
+    <script>
+        async function uploadFile(event) {
+            event.preventDefault();
+
+            document.getElementById('prediction-form').reset();
+            document.getElementById('model-performance').style.display = 'none';
+            document.getElementById('prediction-form').style.display = 'none';
+            document.getElementById('predicted-reach').style.display = 'none';
+            document.getElementById('error').innerText = '';
+            document.getElementById('analysis-plots').innerHTML = '';
+
+            const formData = new FormData(event.target);
+            const response = await fetch('/', { method: 'POST', body: formData });
+            const result = await response.json();
+
+            if (result.error) {
+                document.getElementById('error').innerText = `Error: ${result.error}`;
+            } else {
+                document.getElementById('mse').innerText = `MSE: ${result.mse}`;
+                document.getElementById('rmse').innerText = `RMSE: ${result.rmse}`;
+                document.getElementById('r2_score').innerText = `R² Score: ${result.r2_score}`;
+                document.getElementById('model-performance').style.display = 'block';
+                document.getElementById('prediction-form').style.display = 'block';
+                document.getElementById('prediction-section').style.display = 'block';
+
+                const analysisPlots = document.getElementById('analysis-plots');
+                analysisPlots.innerHTML = `
+                    <h2>Analysis Plots</h2>
+                    <div><h3>Feature Importance</h3>
+                    <img class="img-fluid" src="data:image/png;base64,${result.feature_importance_plot}" alt="Feature Importance"></div>
+                    <div><h3>Top 10 Hashtags</h3>
+                    <img class="img-fluid" src="data:image/png;base64,${result.hashtag_freq_plot}" alt="Hashtag Frequency"></div>
+                    <div><h3>Impressions Distribution</h3>
+                    <img class="img-fluid" src="data:image/png;base64,${result.impressions_dist_plot}" alt="Impressions Distribution"></div>
+                    <div><h3>Correlation Heatmap</h3>
+                    <img class="img-fluid" src="data:image/png;base64,${result.correlation_heatmap}" alt="Correlation Heatmap"></div>
+                    <div><h3>Predicted vs Actual</h3>
+                    <img class="img-fluid" src="data:image/png;base64,${result.predicted_vs_actual_plot}" alt="Predicted vs Actual"></div>
+                `;
+            }
+        }
+
+        async function predictImpressions(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/predict', { method: 'POST', body: new URLSearchParams(formData) });
+            const result = await response.json();
+
+            if (result.error) {
+                document.getElementById('error').innerText = `Error: ${result.error}`;
+            } else {
+                document.getElementById('predicted-reach').innerText = `Predicted Reach: ${result['Predicted Reach (Impressions)']}`;
+                document.getElementById('predicted-reach').style.display = 'block';
+                document.getElementById('error').innerText = '';
+            }
+        }
+    </script>
+</head>
+
+<body class="container py-4">
+
+    <h1 class="text-center mb-4">Instagram Impressions Predictor</h1>
+
+    <div class="card p-4 mb-4">
+        <h2 class="text-center">Step 1: Upload Dataset</h2>
+        <form id="upload-form" method="POST" enctype="multipart/form-data" onsubmit="uploadFile(event)">
+            <div class="mb-3">
+                <input class="form-control" type="file" name="file" accept=".csv" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Train Model</button>
+        </form>
+    </div>
+
+    <p id="error" class="text-danger text-center"></p>
+
+    <div id="model-performance" class="card p-4 mb-4" style="display: none;">
+        <h3>Model Performance</h3>
+        <p id="mse"></p>
+        <p id="rmse"></p>
+        <p id="r2_score"></p>
+    </div>
+
+    <div id="analysis-plots"></div>
+
+    <div id="prediction-section" class="card p-4 mb-4" style="display: none;">
+        <h2 class="text-center">Step 2: Predict Impressions</h2>
+        <form id="prediction-form" method="POST" onsubmit="predictImpressions(event)">
+            <div class="row g-3">
+                <div class="col-md-6"><input class="form-control" type="number" name="Likes" placeholder="Likes"
+                        required></div>
+                <div class="col-md-6"><input class="form-control" type="number" name="Saves" placeholder="Saves"
+                        required></div>
+                <div class="col-md-6"><input class="form-control" type="number" name="Comments" placeholder="Comments"
+                        required></div>
+                <div class="col-md-6"><input class="form-control" type="number" name="Shares" placeholder="Shares"
+                        required></div>
+                <div class="col-md-6"><input class="form-control" type="number" name="Profile Visits"
+                        placeholder="Profile Visits" required></div>
+                <div class="col-md-6"><input class="form-control" type="number" name="Follows" placeholder="Follows"
+                        required></div>
+                <div class="col-12"><input class="form-control" type="text" name="Hashtags"
+                        placeholder="Hashtags (e.g., #tag1 #tag2)" required></div>
+            </div>
+            <button type="submit" class="btn btn-success w-100 mt-3">Predict Reach</button>
+        </form>
+    </div>
+
+    <h3 id="predicted-reach" class="text-success text-center" style="display: none;"></h3>
+
+    <!-- Bootstrap JS Bundle (Optional, needed for Bootstrap features like modals) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
