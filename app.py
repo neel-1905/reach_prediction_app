@@ -2,7 +2,8 @@ from flask import Flask, request, render_template
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import PassiveAggressiveRegressor
+# from sklearn.ensemble import GradientBoostingRegressor
+from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import mean_squared_error, r2_score
@@ -20,7 +21,7 @@ model = None
 numeric_features_count = 6
 mse = None
 rmse = None
-r2_score = None
+r2 = None
 
 def plot_to_base64(plt):
     """Convert a matplotlib plot to a base64 encoded image."""
@@ -63,18 +64,18 @@ def index():
                 X_train[:, :numeric_features_count] = scaler.fit_transform(X_train[:, :numeric_features_count])
                 X_test[:, :numeric_features_count] = scaler.transform(X_test[:, :numeric_features_count])
 
-                # Train a PassiveAggressiveRegressor
-                model = PassiveAggressiveRegressor(max_iter=1000, random_state=42, tol=1e-3)
+                # Train an XGBoost Regressor
+                model = XGBRegressor(n_estimators=500, learning_rate=0.05, max_depth=3, subsample=0.8, random_state=42, objective='reg:squarederror')
                 model.fit(X_train, y_train)
 
                 # Evaluate the model
                 y_pred = model.predict(X_test)
                 mse = mean_squared_error(y_test, y_pred)
                 rmse = np.sqrt(mse)
-                r2_score = model.score(X_test, y_test)
+                r2 = r2_score(y_test, y_pred)
 
                 # Analysis 1: Feature Importance
-                feature_importance = model.coef_[:numeric_features_count]
+                feature_importance = model.feature_importances_[:numeric_features_count]
                 plt.figure(figsize=(10, 5))
                 sns.barplot(x=['Likes', 'Saves', 'Comments', 'Shares', 'Profile Visits', 'Follows'], y=feature_importance)
                 plt.title('Feature Importance (Numeric Features)')
@@ -110,7 +111,7 @@ def index():
                 return {
                     "mse": f"{mse:.2f}",
                     "rmse": f"{rmse:.2f}",
-                    "r2_score": f"{r2_score:.4f}",
+                    "r2_score": f"{r2:.4f}",
                     "feature_importance_plot": feature_importance_plot,
                     "hashtag_freq_plot": hashtag_freq_plot,
                     "impressions_dist_plot": impressions_dist_plot,
