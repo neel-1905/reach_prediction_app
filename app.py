@@ -32,7 +32,7 @@ def plot_to_base64(plt):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global tfidf, scaler, model, mse, rmse, r2_score, numeric_features_count
+    global tfidf, scaler, model, mse, rmse, r2, numeric_features_count
 
     if request.method == 'POST':
         if 'file' in request.files:
