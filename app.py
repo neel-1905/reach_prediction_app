@@ -85,7 +85,7 @@ def index():
                 hashtag_freq = pd.Series(' '.join(data['Hashtags']).split()).value_counts().head(7)
                 plt.figure(figsize=(10, 5))
                 sns.barplot(x=hashtag_freq.index, y=hashtag_freq.values)
-                plt.title('Top 10 Hashtags by Frequency')
+                plt.title('Top 7 Hashtags by Frequency')
                 hashtag_freq_plot = plot_to_base64(plt)
 
                 # Analysis 3: Impressions Distribution
