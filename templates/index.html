@@ -107,23 +107,42 @@
         <h2 class="text-center mb-4">Step 2: Predict Impressions</h2>
         <form id="prediction-form" method="POST" onsubmit="predictImpressions(event)">
             <div class="row g-3">
-                <div class="col-md-6"><input class="form-control" type="number" name="Likes" placeholder="Likes"
-                        required></div>
-                <div class="col-md-6"><input class="form-control" type="number" name="Saves" placeholder="Saves"
-                        required></div>
-                <div class="col-md-6"><input class="form-control" type="number" name="Comments" placeholder="Comments"
-                        required></div>
-                <div class="col-md-6"><input class="form-control" type="number" name="Shares" placeholder="Shares"
-                        required></div>
-                <div class="col-md-6"><input class="form-control" type="number" name="Profile Visits"
-                        placeholder="Profile Visits" required></div>
-                <div class="col-md-6"><input class="form-control" type="number" name="Follows" placeholder="Follows"
-                        required></div>
-                <div class="col-12"><input class="form-control" type="text" name="Hashtags"
-                        placeholder="Hashtags (e.g., #tag1 #tag2)" required></div>
+                <div class="col-md-6">
+                    <label for="likes" class="form-label">Likes</label>
+                    <input id="likes" class="form-control" type="number" name="Likes" placeholder="Likes" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="saves" class="form-label">Saves</label>
+                    <input id="saves" class="form-control" type="number" name="Saves" placeholder="Saves" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="comments" class="form-label">Comments</label>
+                    <input id="comments" class="form-control" type="number" name="Comments" placeholder="Comments"
+                        required>
+                </div>
+                <div class="col-md-6">
+                    <label for="shares" class="form-label">Shares</label>
+                    <input id="shares" class="form-control" type="number" name="Shares" placeholder="Shares" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="profile-visits" class="form-label">Profile Visits</label>
+                    <input id="profile-visits" class="form-control" type="number" name="Profile Visits"
+                        placeholder="Profile Visits" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="follows" class="form-label">Follows</label>
+                    <input id="follows" class="form-control" type="number" name="Follows" placeholder="Follows"
+                        required>
+                </div>
+                <div class="col-12">
+                    <label for="hashtags" class="form-label">Hashtags</label>
+                    <input id="hashtags" class="form-control" type="text" name="Hashtags"
+                        placeholder="Hashtags (e.g., #tag1 #tag2)">
+                </div>
             </div>
             <button type="submit" class="btn btn-success w-100 mt-3">Predict Reach</button>
         </form>
+
     </div>
 
     <h3 id="predicted-reach" class="text-success text-center" style="display: none;"></h3>
